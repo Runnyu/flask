@@ -29,7 +29,7 @@ class User(UserMixin, db.Model):
 
     def __str__(self):
         return " ".join(str(item) for item in (
-            self.email, self.username, self.confirmed))
+            self.id, self.email, self.username, self.confirmed))
 
     @property
     def password(self):
@@ -49,7 +49,7 @@ class User(UserMixin, db.Model):
     def confirm(self, token):
         s = Serializer(current_app.config['SECRET_KEY'])
         try:
-            data = s.load(token)
+            data = s.loads(token.encode('utf-8'))
         except:
             return False
         if data.get('confirm') != self.id:
