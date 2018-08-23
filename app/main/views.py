@@ -142,6 +142,28 @@ def edit(id):
     form.body.data = post.body
     return render_template('edit_post.html', form=form)
 
+@main.route('/delete_post/<int:id>')
+@login_required
+def delete_post(id):
+    post = Post.query.get_or_404(id)
+    if current_user != post.author and \
+            not current_user.can(Permission.ADMINISTER):
+        abort(403)
+    flash('The post has been delete.')
+    db.session.delete(post)
+    return redirect(request.referrer)
+
+@main.route('/delete_comment/<int:id>')
+@login_required
+def delete_comment(id):
+    comment = Comment.query.get_or_404(id)
+    if current_user != comment.author and \
+            not current_user.can(Permission.ADMINISTER):
+        abort(403)
+    flash('The comment has been delete.')
+    db.session.delete(comment)
+    return redirect(request.referrer)
+
 @main.route('/follow/<username>')
 @login_required
 @permission_required(Permission.FOLLOW)
